@@ -15,11 +15,7 @@ export const Searchbar = ({ onSubmit }) => {
   function handleSubmit(e) {
     e.preventDefault();
     onSubmit(e.target[1].value);
-    resetInput();
-  }
-
-  const resetInput = () => {
-    this.setState({ inputValue: '' });
+    e.target.reset();
   }
   
     return (
@@ -72,7 +68,6 @@ export const Searchbar = ({ onSubmit }) => {
             autocomplete='off'
             autoFocus
             placeholder='Search images and photos'
-            // onChange={onInputChange}
           />
         </SearchbarForm>
       </SearchbarHeader>

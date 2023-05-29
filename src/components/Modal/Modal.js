@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import { Overlay, ModalWindow } from './Modal.styled';
@@ -7,29 +7,35 @@ const modalRoot = document.getElementById('modal-root');
 console.log(modalRoot);
 // el = document.createElement('div');
 
-function Modal ({ toggleModal, url, alt }) {
+function Modal ({ url, onClose }) {
+  const modalRef = useRef();
+
   useEffect(() => {
+    modalRef.current.focus();
+  }, []);
+
     const handleKeyDown = e => {
-      if (e.key === 'Escape') {
-        toggleModal('', '');
+      if (
+        (e.currentTarget === e.target && e.type === 'click') ||
+        (e.code === 'Escape')
+      ) {
+        window.addEventListener('keydown', handleKeyDown);
+        onClose();
+        window.removeEventListener('keydown', handleKeyDown);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [toggleModal]);
+    
 
   const handleClickBackdrop = (e) => {
     if (e.target === e.currentTarget) {
-      this.props.onClose();
+      onClose();
     }
   };  
 
     return createPortal(
-      <Overlay onClick={handleClickBackdrop}>
+      <Overlay onClick={handleClickBackdrop} onKeyDown={handleKeyDown}>
         <ModalWindow>
-          <img src={url} alt={alt} />
+          <img src={url} alt={''} />
         </ModalWindow>
       </Overlay>,
       modalRoot

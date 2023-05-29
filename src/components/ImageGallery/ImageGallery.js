@@ -2,7 +2,8 @@ import { ImgGallery } from './ImageGallery.styled';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 
-export default function ImageGallery ({ images, toggleModal }) {
+export default function ImageGallery ({ images, handleClick }) {
+  console.log(images)
   return (
     <>
       <ImgGallery>
@@ -11,7 +12,7 @@ export default function ImageGallery ({ images, toggleModal }) {
             key={id}
             url={largeImageURL}
             tags={tags}
-            toggleModal={toggleModal}
+            handleClick={handleClick}
           />
         ))}
       </ImgGallery>
@@ -20,6 +21,5 @@ export default function ImageGallery ({ images, toggleModal }) {
 };
 
 ImageGallery.propTypes = { 
-  images: PropTypes.array.isRequired,
-  toggleModal: PropTypes.func.isRequired, 
+  images: PropTypes.array.isRequired, 
 };

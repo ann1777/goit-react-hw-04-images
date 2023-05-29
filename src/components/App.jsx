@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
-import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import { LoadButton } from './LoadButton/LoadButton';
 import Modal from './Modal/Modal';
 // import Loader from './Loader/Loader';
@@ -28,7 +27,7 @@ import handleFetch from '../services/pixabayapi';
         .then(({hits}) => {
           if (hits.length === 12) {
             setStatus('loaded');
-            setImages(prevData => [...prevData.hits, ...hits]);
+            setImages(prevData => [...prevData, ...hits]);
             return;
           }
           else if (hits.length === 0) {
@@ -40,45 +39,10 @@ import handleFetch from '../services/pixabayapi';
               return;
             }
             setStatus('idle');
-            setImages(prevData => [...prevData.hits, ...hits]);
+            setImages(prevData => [...prevData, ...hits]);
             return;
           });
         }}, [inputValue, status]);
-  
-
-  // function fetchData(data) {
-  //   try {
-  //     if (data.length === 12) {
-  //       setStatus('loaded');
-  //       setImages(prevData => [...prevData, ...data]);
-  //       return;
-  //     }
-
-  //     if (images.length === 0) {
-  //       toast.info('No images found.', {
-  //         position: toast.POSITION.BOTTOM_CENTER,
-  //       });
-  //       setStatus('rejected');
-  //       setImages([]);
-  //       return;
-  //     }
-  //     setStatus('idle');
-  //     setImages(prevData => [...prevData, ...data]);
-  //     return;
-  //   } catch (error) {
-  //     this.setState({ isLoading: false });
-  //     return toast.error('Error fetching images');
-  //   }
-  // };
-
-  const toggleModal = () => {
-    setShowModal(({ showModal }) => ({ showModal: !showModal }));
-  };
-
-  const getLargeImg = url => {
-    toggleModal();
-    setModalImg({ modalImg: url });
-  };
 
   const onLoadMore = () => {
     setStatus({ status: 'pending' });
@@ -96,10 +60,15 @@ import handleFetch from '../services/pixabayapi';
     }
   };
 
-  // const handleClick = photo => {
-  //   setClickedImg(photo);
-  //   setShowModal(true);
-  // };
+  const handleClick = image => {
+    setModalImg(image);
+    setShowModal(true);
+  };
+
+  const onCloseModal = () => {
+    setShowModal(false);
+  };
+
 
   return (
     <>
@@ -111,18 +80,16 @@ import handleFetch from '../services/pixabayapi';
         value={inputValue}
         onSubmit={handleSearch}
       />
-      <ImageGallery images={images} toggleModal={getLargeImg}>
-      <ImageGalleryItem images={images} onClick={toggleModal} />
-      </ImageGallery>
+      <ImageGallery images={images} handleClick={handleClick}/>
       {showModal &&
         createPortal(
-          <Modal url={modalImg} onClose={toggleModal} />,
+          <Modal url={modalImg} onClose={onCloseModal} />,
           document.body
         )}
-      {this.state.status === 'loaded' && (
+      {status === 'loaded' && (
         <LoadButton onLoadMore={onLoadMore} />
       )}
-      {this.state.status === 'rejected' && (
+      {status === 'rejected' && (
         <div>
           Your generic alert to promt you that there are no images found, but
           I was too lazy to style it. Hell, at least it removed that "Load
