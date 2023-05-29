@@ -10,10 +10,11 @@ import handleFetch from '../services/pixabayapi';
   export const App = () => {
     const [images, setImages] = useState([]);
     const [inputValue, setInputValue] = useState('');
-    const [modalImg, setModalImg] = useState('');
     const [status, setStatus] = useState('idle');
     const [showModal, setShowModal] = useState(false);
     const [page, setPage] = useState(1);
+    const [url, setUrl] = useState('');
+    const [alt, setAlt] = useState('');
     const [totalPage] = useState(1);
     const resetPage = () => {
       setPage(1);
@@ -59,13 +60,14 @@ import handleFetch from '../services/pixabayapi';
     }
   };
 
-  const handleClick = modalImg => {
-    setModalImg(modalImg);
-    setShowModal(true);
+  const handleClick = (url, alt) => {
+    setShowModal(prevState => !prevState);
+    setUrl(url);
+    setAlt(alt);
   };
 
   const onCloseModal = () => {
-    setShowModal(true);
+    setShowModal(false);
   };
 
 
@@ -81,7 +83,7 @@ import handleFetch from '../services/pixabayapi';
       />
       <ImageGallery images={images} handleClick={handleClick}/>
       {showModal &&
-          <Modal img={modalImg} onClose={onCloseModal} />}
+          <Modal img={url} alt={alt} onClose={onCloseModal} />}
       {status === 'loaded' && (
         <LoadButton onLoadMore={onLoadMore} />
       )}

@@ -8,11 +8,12 @@ console.log(modalRoot);
 const el = document.createElement('div');
 
 function Modal ({ img, onClose }) {
-  console.log(img, onClose)
+  // console.log(img)
+  // console.log(onClose)
   useEffect(() => {
     const handleCloseEsc = e => {
       if (e.code === 'Escape') {
-        onClose();
+        onClose('', '');
       }
     };
     modalRoot.appendChild(el);
@@ -27,14 +28,14 @@ function Modal ({ img, onClose }) {
 
   const handleClickBackdrop = (e) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      onClose('', '');
     }
   };  
 
     return createPortal(
       <Overlay onClick={handleClickBackdrop}>
         <ModalWindow>
-          <img src={img.largeImageURL} alt={''} />
+          <img src={img} alt={''} />
         </ModalWindow>
       </Overlay>,
       modalRoot
@@ -42,6 +43,7 @@ function Modal ({ img, onClose }) {
   };
 
   Modal.propTypes = {
+    onClose: PropTypes.func.isRequired,
     img: PropTypes.string.isRequired,
     alt: PropTypes.string,
   };
