@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import { LoadButton } from './LoadButton/LoadButton';
@@ -60,7 +59,7 @@ import handleFetch from '../services/pixabayapi';
     }
   };
 
-  const handleClick = image => {
+  const handleClick = modalImg => {
     setModalImg(modalImg);
     setShowModal(true);
   };
@@ -82,10 +81,7 @@ import handleFetch from '../services/pixabayapi';
       />
       <ImageGallery images={images} handleClick={handleClick}/>
       {showModal &&
-        createPortal(
-          <Modal img={modalImg} onClose={onCloseModal} />,
-          document.body
-        )}
+          <Modal img={modalImg} onClose={onCloseModal} />}
       {status === 'loaded' && (
         <LoadButton onLoadMore={onLoadMore} />
       )}

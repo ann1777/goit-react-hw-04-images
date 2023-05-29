@@ -21,6 +21,6 @@ export default function ImageGallery ({ images, handleClick }) {
 };
 
 ImageGallery.propTypes = { 
-  images: PropTypes.element.isRequired,
+  images: PropTypes.array.isRequired,
   handleClick: PropTypes.func.isRequired,  
 };
