@@ -61,7 +61,7 @@ import handleFetch from '../services/pixabayapi';
   };
 
   const handleClick = image => {
-    setModalImg(image);
+    setModalImg(modalImg);
     setShowModal(true);
   };
 
@@ -83,7 +83,7 @@ import handleFetch from '../services/pixabayapi';
       <ImageGallery images={images} handleClick={handleClick}/>
       {showModal &&
         createPortal(
-          <Modal url={modalImg} onClose={onCloseModal} />,
+          <Modal img={modalImg} onClose={onCloseModal} />,
           document.body
         )}
       {status === 'loaded' && (

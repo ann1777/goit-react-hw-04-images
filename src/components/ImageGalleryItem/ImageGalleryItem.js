@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import { GalleryItem, GalleryImage } from './ImageGalleryItem.styled';
 const ImageGalleryItem = ({ url, tags, handleClick }) => {
+  console.log(url);
     return (
       <GalleryItem
-        onClick={() => handleClick(url)}
+          onClick={() => handleClick(url)}
       >
         <GalleryImage
           src={url}
@@ -13,8 +14,9 @@ const ImageGalleryItem = ({ url, tags, handleClick }) => {
     );
   }
 ImageGalleryItem.propTypes = {
-  onClick: PropTypes.func.isRequired,
   handleClick: PropTypes.func.isRequired,
+  url: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
 };
 
 export default ImageGalleryItem;

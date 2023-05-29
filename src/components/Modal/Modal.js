@@ -1,30 +1,24 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { createPortal } from 'react-dom';
 import { Overlay, ModalWindow } from './Modal.styled';
 
 const modalRoot = document.getElementById('modal-root');
 console.log(modalRoot);
-// el = document.createElement('div');
 
-function Modal ({ url, onClose }) {
-  const modalRef = useRef();
-
+function Modal ({ img, onClose }) {
   useEffect(() => {
-    modalRef.current.focus();
-  }, []);
-
-    const handleKeyDown = e => {
-      if (
-        (e.currentTarget === e.target && e.type === 'click') ||
-        (e.code === 'Escape')
-      ) {
-        window.addEventListener('keydown', handleKeyDown);
+    const handleCloseEsc = e => {
+      if (e.code === 'Escape') {
         onClose();
-        window.removeEventListener('keydown', handleKeyDown);
       }
     };
-    
+    window.addEventListener('keydown', handleCloseEsc);
+    return () => {
+      window.removeEventListener('keydown', handleCloseEsc);
+    };
+  }, [onClose]);
+
 
   const handleClickBackdrop = (e) => {
     if (e.target === e.currentTarget) {
@@ -33,9 +27,9 @@ function Modal ({ url, onClose }) {
   };  
 
     return createPortal(
-      <Overlay onClick={handleClickBackdrop} onKeyDown={handleKeyDown}>
+      <Overlay onClick={useEffect} onClose={handleClickBackdrop}>
         <ModalWindow>
-          <img src={url} alt={''} />
+          <img src={img.largeImageURL} alt={''} />
         </ModalWindow>
       </Overlay>,
       modalRoot
@@ -43,8 +37,7 @@ function Modal ({ url, onClose }) {
   };
 
   Modal.propTypes = {
-    toggleModal: PropTypes.func.isRequired,
-    url: PropTypes.string.isRequired,
+    img: PropTypes.string.isRequired,
     alt: PropTypes.string,
   };
   export default Modal;

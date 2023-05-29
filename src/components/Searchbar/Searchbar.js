@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 
 import {
   SearchbarHeader,
@@ -12,10 +12,15 @@ import PropTypes from 'prop-types';
 
 
 export const Searchbar = ({ onSubmit }) => {
-  function handleSubmit(e) {
+  const [value, setValue] = useState('');
+
+  const onHandleInput = e => {
+    setValue(e.currentTarget.value);
+  };
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(e.target[1].value);
-    e.target.reset();
+    onSubmit(e.target.value);
   }
   
     return (
@@ -68,6 +73,7 @@ export const Searchbar = ({ onSubmit }) => {
             autocomplete='off'
             autoFocus
             placeholder='Search images and photos'
+            onChange={onHandleInput}
           />
         </SearchbarForm>
       </SearchbarHeader>
