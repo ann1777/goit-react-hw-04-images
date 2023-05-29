@@ -1,7 +1,7 @@
 import { LoadMoreBtn, LBContainer } from './LoadButton.styled';
 import PropTypes from 'prop-types';
 
-export const LoadButton = ({ onLoadMore }) => {
+export function LoadButton ({ onLoadMore }) {
   return (
     <LBContainer>
       <LoadMoreBtn type='button' onClick={onLoadMore}>

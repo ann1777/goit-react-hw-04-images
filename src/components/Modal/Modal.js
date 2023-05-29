@@ -5,20 +5,25 @@ import { Overlay, ModalWindow } from './Modal.styled';
 
 const modalRoot = document.getElementById('modal-root');
 console.log(modalRoot);
+const el = document.createElement('div');
 
 function Modal ({ img, onClose }) {
+  console.log(img, onClose)
   useEffect(() => {
     const handleCloseEsc = e => {
       if (e.code === 'Escape') {
         onClose();
       }
     };
+    modalRoot.appendChild(el);
     window.addEventListener('keydown', handleCloseEsc);
     return () => {
+      modalRoot.removeChild(el);
       window.removeEventListener('keydown', handleCloseEsc);
     };
   }, [onClose]);
 
+ 
 
   const handleClickBackdrop = (e) => {
     if (e.target === e.currentTarget) {
@@ -27,7 +32,7 @@ function Modal ({ img, onClose }) {
   };  
 
     return createPortal(
-      <Overlay onClick={useEffect} onClose={handleClickBackdrop}>
+      <Overlay onClick={handleClickBackdrop}>
         <ModalWindow>
           <img src={img.largeImageURL} alt={''} />
         </ModalWindow>

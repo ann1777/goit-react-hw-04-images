@@ -66,7 +66,7 @@ import handleFetch from '../services/pixabayapi';
   };
 
   const onCloseModal = () => {
-    setShowModal(false);
+    setShowModal(true);
   };
 
 

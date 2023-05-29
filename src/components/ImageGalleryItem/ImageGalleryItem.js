@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import { GalleryItem, GalleryImage } from './ImageGalleryItem.styled';
-const ImageGalleryItem = ({ url, tags, handleClick }) => {
+function ImageGalleryItem ({ url, tags, handleClick }) {
   console.log(url);
     return (
       <GalleryItem
@@ -15,8 +15,8 @@ const ImageGalleryItem = ({ url, tags, handleClick }) => {
   }
 ImageGalleryItem.propTypes = {
   handleClick: PropTypes.func.isRequired,
-  url: PropTypes.string.isRequired,
-  tags: PropTypes.string.isRequired,
+  // url: PropTypes.string.isRequired,
+  // tags: PropTypes.string.isRequired,
 };
 
 export default ImageGalleryItem;
