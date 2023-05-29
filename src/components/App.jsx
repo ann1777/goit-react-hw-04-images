@@ -25,35 +25,51 @@ import handleFetch from '../services/pixabayapi';
     if (status === 'pending') {
       setStatus('loading');
       handleFetch(inputValue)
-        .then(data => handleFetchData(data.hits))
-        .catch(error => console.log(error));
-    }
-  }, [inputValue, status]);
+        .then(({hits}) => {
+          if (hits.length === 12) {
+            setStatus('loaded');
+            setImages(prevData => [...prevData.hits, ...hits]);
+            return;
+          }
+          else if (hits.length === 0) {
+              toast.info('No images found.', {
+                position: toast.POSITION.BOTTOM_CENTER,
+              });
+              setStatus('rejected');
+              setImages([]);
+              return;
+            }
+            setStatus('idle');
+            setImages(prevData => [...prevData.hits, ...hits]);
+            return;
+          });
+        }}, [inputValue, status]);
+  
 
-  function handleFetchData(data) {
-    try {
-      if (data.length === 12) {
-        setStatus('loaded');
-        setImages(prevData => [...prevData, ...data]);
-        return;
-      }
+  // function fetchData(data) {
+  //   try {
+  //     if (data.length === 12) {
+  //       setStatus('loaded');
+  //       setImages(prevData => [...prevData, ...data]);
+  //       return;
+  //     }
 
-      if (images.length === 0) {
-        toast.info('No images found.', {
-          position: toast.POSITION.BOTTOM_CENTER,
-        });
-        setStatus('rejected');
-        setImages([]);
-        return;
-      }
-      setStatus('idle');
-      setImages(prevData => [...prevData, ...data]);
-      return;
-    } catch (error) {
-      this.setState({ isLoading: false });
-      return toast.error('Error fetching images');
-    }
-  };
+  //     if (images.length === 0) {
+  //       toast.info('No images found.', {
+  //         position: toast.POSITION.BOTTOM_CENTER,
+  //       });
+  //       setStatus('rejected');
+  //       setImages([]);
+  //       return;
+  //     }
+  //     setStatus('idle');
+  //     setImages(prevData => [...prevData, ...data]);
+  //     return;
+  //   } catch (error) {
+  //     this.setState({ isLoading: false });
+  //     return toast.error('Error fetching images');
+  //   }
+  // };
 
   const toggleModal = () => {
     setShowModal(({ showModal }) => ({ showModal: !showModal }));
