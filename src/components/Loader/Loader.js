@@ -8,5 +8,4 @@ function Loader () {
     </LoaderContainer>
   );
 };
-v
 export default Loader;
