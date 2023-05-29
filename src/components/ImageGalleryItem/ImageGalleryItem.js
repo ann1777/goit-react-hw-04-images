@@ -1,19 +1,25 @@
 import PropTypes from 'prop-types';
 import { GalleryItem, GalleryImage } from './ImageGalleryItem.styled';
-const ImageGalleryItem = ({url, tags, toggleModal }) => {
-  return (
-    <>
-      <GalleryItem>
+const ImageGalleryItem = ({ images, toggleModal }) => {
+  return images.map(image => {
+    return (
+      <GalleryItem
+        key={image.id}
+        onClick={() => {
+          toggleModal(image);
+        }}
+      >
         <GalleryImage
-        src={url}
-        alt={tags} 
-        onClick={()=>toggleModal(url)} />
+          src={image.webformatUPL}
+          alt={image.tags}
+          onClick={() => toggleModal(image)}
+        />
       </GalleryItem>
-    </>
-  );
+    );
+  });
 };
 ImageGalleryItem.propTypes = {
-  toggleModal: PropTypes.func.isRequired,
+  onClick: PropTypes.func.isRequired,
 };
 
 export default ImageGalleryItem;

@@ -1,136 +1,120 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Searchbar from './Searchbar/Searchbar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import Modal from './Modal/Modal';
+import ImageGallery from './ImageGallery/ImageGallery';
+import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import { LoadButton } from './LoadButton/LoadButton';
+import Modal from './Modal/Modal';
 // import Loader from './Loader/Loader';
-import { ToastContainer, toast } from 'react-toastify';
+import  { ToastContainer, toast } from 'react-toastify';
 import handleFetch from '../services/pixabayapi';
-export class App extends Component {
-  state = {
-    images: [],
-    inputValue: '',
-    modalImg: '',
-    status: 'idle',
-    showModal: false,
-    page: 1,
-  };
 
-  resetPage = () => {
-    this.setState({ page: 1 });
-  };
+  export const App = () => {
+    const [images, setImages] = useState([]);
+    const [inputValue, setInputValue] = useState('');
+    const [modalImg, setModalImg] = useState('');
+    const [status, setStatus] = useState('idle');
+    const [showModal, setShowModal] = useState(false);
+    const [page, setPage] = useState(1);
+    const [totalPage] = useState(1);
+    const resetPage = () => {
+      setPage(1);
+    };
 
-  componentDidUpdate(_, prevState) {
-    if (
-      prevState.inputValue !== this.state.inputValue ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({images: []})
-      this.handleFetch();
+  useEffect(() => {
+    if (status === 'pending') {
+      setStatus('loading');
+      handleFetch(inputValue)
+        .then(data => handleFetchData(data.hits))
+        .catch(error => console.log(error));
     }
-  }
+  }, [inputValue, status]);
 
-  async handleFetch() {
+  function handleFetchData(data) {
     try {
-      const { inputValue, page } = this.state;
-
-      this.setState({
-        isLoading: true,
-      });
-
-      const images = await handleFetch(inputValue, page);
-      console.log(images);
-
-      this.setState(prevState => ({
-        images: [...prevState.images, ...images.hits],
-        isLoading: false,
-        totalPage: Math.ceil(images.total / 12),
-      }));
+      if (data.length === 12) {
+        setStatus('loaded');
+        setImages(prevData => [...prevData, ...data]);
+        return;
+      }
 
       if (images.length === 0) {
         toast.info('No images found.', {
           position: toast.POSITION.BOTTOM_CENTER,
         });
+        setStatus('rejected');
+        setImages([]);
+        return;
       }
+      setStatus('idle');
+      setImages(prevData => [...prevData, ...data]);
+      return;
     } catch (error) {
       this.setState({ isLoading: false });
       return toast.error('Error fetching images');
     }
   };
 
-  getInputValue = handleValue => {
-    this.resetPage();
-    this.setState({ inputValue: handleValue });
+  const toggleModal = () => {
+    setShowModal(({ showModal }) => ({ showModal: !showModal }));
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  const getLargeImg = url => {
+    toggleModal();
+    setModalImg({ modalImg: url });
   };
 
-  getLargeImg = url => {
-    this.toggleModal();
-    this.setState({ modalImg: url });
+  const onLoadMore = () => {
+    setStatus({ status: 'pending' });
+    setPage(page + 1);
   };
 
-  onLoadMore = () => {
-    this.setState({ status: 'pending' });
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
-  };
-
-  handleChange = e => {
-    this.setState({ query: e.target.value });
-  };
-
-  handleSearch = e => {
-    e.preventDefault();
-    const { inputValue } = this.state;
+  const handleSearch = e => {
+    resetPage();
+    setStatus('pending');
+    setImages([]);
+    setInputValue(inputValue);
     if (!inputValue) {
       toast.error('Please enter a search query');
       return;
     }
-    this.props.onSubmit(inputValue);
-    this.setState({ inputValue: '' });
   };
 
-  render() {
-    const { modalImg, showModal, page, totalPage, images, inputValue } = this.state;
-    const loadMoreImgs = page < totalPage;
-    // console.log(page, images);
-    return (
-      <>
-        <Searchbar
-          type="text"
-          autoComplete="off"
-          autoFocus
-          placeholder="Search images and photos"
-          value={inputValue}
-          getInputValue={this.getInputValue}
-          onSubmit={this.handleChange}
-        />
-        <ImageGallery images={images} toggleModal={this.getLargeImg} />
-        {showModal &&
-          createPortal(
-            <Modal url={modalImg} onClose={this.toggleModal} />,
-            document.body
-          )}
-        {this.state.status === 'loaded' && (
-          <LoadButton onLoadMore={this.onLoadMore} />
-        )}
-        {this.state.status === 'rejected' && (
-          <div>
-            Your generic alert to promt you that there are no images found, but
-            I was too lazy to style it. Hell, at least it removed that "Load
-            More" button from showing
-          </div>
-        )}
-        {loadMoreImgs && <LoadButton onLoadMore={this.onLoadMore} />}
-        <ToastContainer autoClose={1000} />
-      </>
-    );
-  }
-}
+  // const handleClick = photo => {
+  //   setClickedImg(photo);
+  //   setShowModal(true);
+  // };
 
-export default App;
+  return (
+    <>
+      <Searchbar
+        type="text"
+        autoComplete="off"
+        autoFocus
+        placeholder="Search images and photos"
+        value={inputValue}
+        onSubmit={handleSearch}
+      />
+      <ImageGallery images={images} toggleModal={getLargeImg}>
+      <ImageGalleryItem images={images} onClick={toggleModal} />
+      </ImageGallery>
+      {showModal &&
+        createPortal(
+          <Modal url={modalImg} onClose={toggleModal} />,
+          document.body
+        )}
+      {this.state.status === 'loaded' && (
+        <LoadButton onLoadMore={onLoadMore} />
+      )}
+      {this.state.status === 'rejected' && (
+        <div>
+          Your generic alert to promt you that there are no images found, but
+          I was too lazy to style it. Hell, at least it removed that "Load
+          More" button from showing
+        </div>
+      )}
+      {(page < totalPage) && <LoadButton onLoadMore={onLoadMore} />}
+      <ToastContainer autoClose={1000} />
+    </>
+  );
+}

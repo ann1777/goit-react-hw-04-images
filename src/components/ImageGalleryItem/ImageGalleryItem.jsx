@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { GalleryItemStyle } from './ImageGalleryItem.styled';
 
-const ImageGalleryItem = ({ url, tags, togleModal }) => {
+function ImageGalleryItem ({ url, tags, togleModal }) {
   return (
     <GalleryItemStyle.GallerryItem>
       <GalleryItemStyle.GallerryItemImg
