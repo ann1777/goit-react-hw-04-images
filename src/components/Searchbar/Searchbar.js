@@ -18,14 +18,14 @@ export const Searchbar = ({ onSubmit }) => {
     setValue(e.currentTarget.value);
   };
 
-  const handleSubmit = (e) => {
+  const onHandleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(e.target.value);
+    onSubmit(value);
   }
   
     return (
       <SearchbarHeader>
-        <SearchbarForm className='form' onSubmit={handleSubmit}>
+        <SearchbarForm className='form' onSubmit={onHandleSubmit}>
           <SearchButton type='submit' className='button'>
             <SearchLabel className='button-label'>Search</SearchLabel>
           </SearchButton>

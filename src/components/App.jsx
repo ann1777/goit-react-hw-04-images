@@ -24,32 +24,53 @@ import handleFetch from '../services/pixabayapi';
     if (status === 'pending') {
       setStatus('loading');
       handleFetch(inputValue)
-        .then(({hits}) => {
-          if (hits.length === 12) {
-            setStatus('loaded');
-            setImages(prevData => [...prevData, ...hits]);
-            return;
-          }
-          else if (hits.length === 0) {
-              toast.info('No images found.', {
-                position: toast.POSITION.BOTTOM_CENTER,
-              });
-              setStatus('rejected');
-              setImages([]);
-              return;
-            }
-            setStatus('idle');
-            setImages(prevData => [...prevData, ...hits]);
-            return;
-          });
-        }}, [inputValue, status]);
+
+      .then(data => onHandleData(data.hits))
+      .catch(error => console.log(error));
+  }
+}, [inputValue, status]);
+
+function onHandleData(data) {
+  if (data.length === 12) {
+    setStatus('loaded');
+    setImages(prevData => [...prevData, ...data]);
+    return;
+  }
+  if (data.length === 0) {
+    setStatus('rejected');
+    setImages([]);
+    return;
+  }
+  setStatus('idle');
+  setImages(prevData => [...prevData, ...data]);
+  return;
+}
+        // .then(({hits}) => {
+        //   if (hits.length === 12) {
+        //     setStatus('loaded');
+        //     setImages(prevData => [...prevData, ...hits]);
+        //     return;
+        //   }
+        //   else if (hits.length === 0) {
+        //       toast.info('No images found.', {
+        //         position: toast.POSITION.BOTTOM_CENTER,
+        //       });
+        //       setStatus('rejected');
+        //       setImages([]);
+        //       return;
+        //     }
+        //     setStatus('idle');
+        //     setImages(prevData => [...prevData, ...hits]);
+        //     return;
+        //   });
+        // }}, [inputValue, status]);
 
   const onLoadMore = () => {
     setStatus({ status: 'pending' });
     setPage(page + 1);
   };
 
-  const handleSearch = e => {
+  const onSubmit = inputValue => {
     resetPage();
     setStatus('pending');
     setImages([]);
@@ -79,7 +100,7 @@ import handleFetch from '../services/pixabayapi';
         autoFocus
         placeholder="Search images and photos"
         value={inputValue}
-        onSubmit={handleSearch}
+        onSubmit={onSubmit}
       />
       <ImageGallery images={images} handleClick={handleClick}/>
       {showModal &&

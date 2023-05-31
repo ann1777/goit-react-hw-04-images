@@ -9,9 +9,11 @@ export default async function handleFetch (inputValue) {
     page: `${PAGE_COUNTER}`,
     per_page: 12,
   });
-  return await fetch(
-      `${BASE_URL}?${searchParam}`
-    )
-    .then(response => response.json(), PAGE_COUNTER += 1)
-    .catch(err => console.log(err));
+
+  const response = await fetch(`${BASE_URL}?${searchParam}`);
+  if (response.ok) {
+    PAGE_COUNTER += 1;
+    return response.json();
+  }
+  throw new Error('ERROR');
 }
