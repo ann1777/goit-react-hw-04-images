@@ -22,7 +22,7 @@ export const App = () => {
   };
 
   useEffect(() => {
-    if (status === 'pending') {
+    if (inputValue !== "") {
       setIsLoading(true);
       handleFetch(inputValue)
       .then(data => onHandleData(data.hits))
