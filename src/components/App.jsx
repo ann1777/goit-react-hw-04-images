@@ -23,11 +23,11 @@ export const App = () => {
 
   useEffect(() => {
     if (status === 'pending') {
-      setIsLoading();
+      setIsLoading(true);
       handleFetch(inputValue)
       .then(data => onHandleData(data.hits))
       .catch(error => console.log(error))
-      .finally(toggleLoading());
+      .finally(() => setIsLoading(false));
     }
   }, [inputValue, status]);
 
@@ -112,10 +112,6 @@ export const App = () => {
 
     const onCloseModal = () => {
       setShowModal(false);
-    };
-
-    const toggleLoading = () => {
-      setIsLoading(prevState => !prevState);
     };
 
     return (
