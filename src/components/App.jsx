@@ -89,6 +89,7 @@ export const App = () => {
     // }}, [inputValue, status]);
 
     const onLoadMore = () => {
+      setStatus({ status: 'loaded' });
       setPage(page + 1);
     };
 
