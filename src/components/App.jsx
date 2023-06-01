@@ -89,13 +89,12 @@ export const App = () => {
     // }}, [inputValue, status]);
 
     const onLoadMore = () => {
-      setStatus({ status: 'pending' });
       setPage(page + 1);
     };
 
     const onSubmit = inputValue => {
       resetPage();
-      setStatus('pending');
+      setStatus('loaded');
       setImages([]);
       setInputValue(inputValue);
       if (!inputValue) {
