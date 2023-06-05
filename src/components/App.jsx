@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
+import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import { LoadButton } from './LoadButton/LoadButton';
 import Modal from './Modal/Modal';
 import Loader from './Loader/Loader';
@@ -22,86 +23,43 @@ export const App = () => {
   };
 
   useEffect(() => {
-    if (inputValue !== "") {
+    if (status === 'pending') {
       setIsLoading(true);
       handleFetch(inputValue)
-      .then(data => onHandleData(data.hits))
-      .catch(error => console.log(error))
-      .finally(() => setIsLoading(false));
+        .then(data => onHandleData(data.hits))
+        .catch(error => console.log(error))
+        .finally(() => setIsLoading(false));
     }
   }, [inputValue, status]);
 
-        // .then(response => {
-        //   if (page > 1) {
-        //     setImages(prevState => [...prevState, ...response.hits]);
-        //   } else {
-        //     setImages([...response.hits]);
-        //     setTotalPage(Math.ceil(response.total - 12));
-        //   }
-        // })
-        // .catch(
-        //   error => {
-        //     setErr(error);
-        //     console.log(err);
-        //   },
-        //   [inputValue, page, err]
-        // );
-    // }
-
-    //       } onHandleData(data.hits))
-    //       .catch(error => console.log(error));
-    //   }
-    // }, [inputValue, status]);
-
     function onHandleData(data) {
       if (data.length === 12) {
-        setStatus('loaded');
         setImages(prevData => [...prevData, ...data]);
+        setStatus('loaded');
         return;
       }
       if (data.length === 0) {
-        setStatus('rejected');
         setImages([]);
+        setStatus('rejected');
         return;
       }
-      setStatus('idle');
       setImages(prevData => [...prevData, ...data]);
       return;
     }
-    // .then(({hits}) => {
-    //   if (hits.length === 12) {
-    //     setStatus('loaded');
-    //     setImages(prevData => [...prevData, ...hits]);
-    //     return;
-    //   }
-    //   else if (hits.length === 0) {
-    //       toast.info('No images found.', {
-    //         position: toast.POSITION.BOTTOM_CENTER,
-    //       });
-    //       setStatus('rejected');
-    //       setImages([]);
-    //       return;
-    //     }
-    //     setStatus('idle');
-    //     setImages(prevData => [...prevData, ...hits]);
-    //     return;
-    //   });
-    // }}, [inputValue, status]);
 
     const onLoadMore = () => {
-      setStatus({ status: 'loaded' });
-      setPage(page + 1);
-    };
+      setStatus('pending');
+    }
 
     const onSubmit = inputValue => {
-      resetPage();
-      setStatus('loaded');
-      setImages([]);
-      setInputValue(inputValue);
       if (!inputValue) {
         toast.error('Please enter a search query');
         return;
       }
+      resetPage();
+      setStatus('pending');
+      setImages([]);
+      setInputValue(inputValue);     
     };
 
     const handleClick = (url, alt) => {
@@ -125,7 +83,9 @@ export const App = () => {
           onSubmit={onSubmit}
         />
         {isLoading && <Loader/>}
-        <ImageGallery images={images} handleClick={handleClick} />
+        <ImageGallery >
+          <ImageGalleryItem images={images} handleClick={handleClick} />
+        </ImageGallery> 
         {showModal && <Modal img={url} alt={alt} onClose={onCloseModal} />}
         {status === 'loaded' && <LoadButton onLoadMore={onLoadMore} />}
         {status === 'rejected' && (
