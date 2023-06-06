@@ -14,89 +14,82 @@ export const App = () => {
   const [status, setStatus] = useState('idle');
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [totalPage, setTotalPage] = useState(1);
   const [page, setPage] = useState(1);
-  const [totalPage] = useState(1);
   const [url, setUrl] = useState('');
   const [alt, setAlt] = useState('');
+  const [isFirstGetImages, setIsFirstGetImages] = useState(true);
   const resetPage = () => {
     setPage(1);
   };
 
   useEffect(() => {
-    if (status === 'pending') {
-      setIsLoading(true);
-      handleFetch(inputValue)
-        .then(data => onHandleData(data.hits))
-        .catch(error => console.log(error))
-        .finally(() => setIsLoading(false));
-    }
-  }, [inputValue, status]);
-
-    function onHandleData(data) {
-      if (data.length === 12) {
-        setImages(prevData => [...prevData, ...data]);
-        setStatus('loaded');
-        return;
-      }
-      if (data.length === 0) {
-        setImages([]);
-        setStatus('rejected');
-        return;
-      }
-      setImages(prevData => [...prevData, ...data]);
+    if (isFirstGetImages) {
       return;
     }
+    handleFetch(inputValue, page)
+      .then(data => {
+        if (page > 1) {
+          setImages(prevData => [...prevData, ...data.hits]);
+        } else {
+          setImages([...data.hits]);
+          setTotalPage(Math.ceil(data.total - 12));
+        }
+      })
+      .catch(error => console.log(error))
+      .finally = () => {
+        setIsLoading(false)
+        setIsFirstGetImages(false)}
+  }, [inputValue, page, isFirstGetImages]);
 
-    const onLoadMore = () => {
-      setStatus('pending');
+  const onLoadMore = () => {
+    if (page < totalPage) {
+      setPage(prevState => prevState + 1);
     }
-
-    const onSubmit = inputValue => {
-      if (!inputValue) {
-        toast.error('Please enter a search query');
-        return;
-      }
-      resetPage();
-      setStatus('pending');
-      setImages([]);
-      setInputValue(inputValue);     
-    };
-
-    const handleClick = (url, alt) => {
-      setShowModal(prevState => !prevState);
-      setUrl(url);
-      setAlt(alt);
-    };
-
-    const onCloseModal = () => {
-      setShowModal(false);
-    };
-
-    return (
-      <>
-        <Searchbar
-          type="text"
-          autoComplete="off"
-          autoFocus
-          placeholder="Search images and photos"
-          value={inputValue}
-          onSubmit={onSubmit}
-        />
-        {isLoading && <Loader/>}
-        <ImageGallery >
-          <ImageGalleryItem images={images} handleClick={handleClick} />
-        </ImageGallery> 
-        {showModal && <Modal img={url} alt={alt} onClose={onCloseModal} />}
-        {status === 'loaded' && <LoadButton onLoadMore={onLoadMore} />}
-        {status === 'rejected' && (
-          <div>
-            Your generic alert to promt you that there are no images found, but
-            I was too lazy to style it. Hell, at least it removed that "Load
-            More" button from showing
-          </div>
-        )}
-        {page < totalPage && <LoadButton onLoadMore={onLoadMore} />}
-        <ToastContainer autoClose={1000} />
-      </>
-    );
   };
+
+  const onSubmit = inputValue => {
+    if (!inputValue) {
+      toast.error('Please enter a search query');
+      return;
+    }
+    resetPage();
+    setStatus('pending');
+    setInputValue(prevState => inputValue);
+    setIsFirstGetImages(false);
+  };
+
+  const handleClick = (url, alt) => {
+    setShowModal(prevState => !prevState);
+    setUrl(url);
+    setAlt(alt);
+    console.log(url, alt)
+  };
+
+  return (
+    <>
+      <Searchbar
+        type="text"
+        autoComplete="off"
+        autoFocus
+        placeholder="Search images and photos"
+        value={inputValue}
+        onSubmit={onSubmit}
+      />
+      {isLoading && <Loader />}
+      <ImageGallery>
+        <ImageGalleryItem images={images} handleClick={handleClick} />
+      </ImageGallery>
+      {showModal && <Modal img={url} alt={alt} onClose={handleClick} />}
+      {status === 'rejected' && (
+        <div>
+          Your generic alert to promt you that there are no images found, but I
+          was too lazy to style it. Hell, at least it removed that "Load More"
+          button from showing
+        </div>
+      )}
+      {page < totalPage && <LoadButton onLoadMore={onLoadMore} />}
+      <ToastContainer autoClose={1000} />
+    </>
+  );
+};
