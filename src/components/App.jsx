@@ -39,11 +39,14 @@ export const App = () => {
       .catch(error => console.log(error))
       .finally = () => {
         setIsLoading(false)
+        setPage(1)
+        console.log(page)
         setIsFirstGetImages(false)}
   }, [inputValue, page, isFirstGetImages]);
 
   const onLoadMore = () => {
     if (page < totalPage) {
+      console.log(page)
       setPage(prevState => prevState + 1);
     }
   };
